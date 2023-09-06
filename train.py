@@ -1,6 +1,5 @@
 import warnings
 warnings.simplefilter("ignore")
-
 original_filterwarnings = warnings.filterwarnings
 def _filterwarnings(*args, **kwargs):
     return original_filterwarnings(*args, **{**kwargs, 'append':True})
