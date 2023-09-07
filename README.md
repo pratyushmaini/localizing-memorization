@@ -20,11 +20,11 @@ The code requires Python 3.10 and PyTorch1.8+.
 
 The main scripts to run are:
 
-- `gradient_accounting.py` - Computes gradient norms for clean and noisy examples
-- `layer_rewinding.py` - Evaluates model accuracy when rewinding layers 
-- `layer_retraining.py` - Retrains individual layers on clean examples
-- `neuron_flipping.py` - Finds the minimum neurons to flip an example's prediction
-- `example_tied_dropout.py` - Implements the proposed dropout method
+- `experiments/gradient_accounting.py` - Computes gradient norms for clean and noisy examples
+- `experiments/layer_rewinding.py` - Evaluates model accuracy when rewinding layers 
+- `experiments/layer_retraining.py` - Retrains individual layers on clean examples
+- `experiments/neuron_flipping` - Finds the minimum neurons to flip an example's prediction
+- `models/dropout.py` - Implements the proposed dropout method
 
 
 
