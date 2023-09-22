@@ -69,30 +69,27 @@ def get_new_grads(model, x,y,current_example_index, robustify = False, n_EoT = 1
         # import ipdb; ipdb.set_trace()
         if robustify:
             # To get robust estimate of gradients, we will add gaussian noise to sample
-            x = x + l2_noise(x, 0.01)
+            x_ = x + l2_noise(x, 0.01)
 
-        preds = model(x)    
-        final_preds = preds.detach() if final_preds is None else final_preds + preds.detach()
-
-        loss = nn.CrossEntropyLoss(reduction = 'none')(preds, y)
-        batch_size = y.shape[0]
-        #for the example that we want to flip, we must reverse the loss while maintaing the population loss
-        loss[current_example_index] *= -1*batch_size
-        loss = loss.mean()
-        loss.backward()
-
-        for name,param in (model.named_parameters()):
-            if name in grads_list: grads_list[name] += param.grad.detach()
-            else: grads_list[name] = copy.deepcopy(param.grad.detach())
-
-        # ipdb.set_trace()
-        model.zero_grad()
-
-    for name,param in (model.named_parameters()):
-        grads_list[name] /= n_EoT
-
+        preds = model(x_)
+        final_preds = preds if final_preds is None else final_preds + preds
     
-    return grads_list, preds/n_EoT
+    final_preds /= n_EoT
+
+    loss = nn.CrossEntropyLoss(reduction = 'none')(final_preds, y)
+    batch_size = y.shape[0]
+    #for the example that we want to flip, we must reverse the loss while maintaing the population loss
+    loss[current_example_index] *= -1*batch_size
+    loss = loss.mean()
+    loss.backward()
+
+    for name, param in (model.named_parameters()):
+        grads_list[name] = copy.deepcopy(param.grad.detach())
+
+    # ipdb.set_trace()
+    model.zero_grad()
+
+    return grads_list, final_preds.detach()
 
 
 def get_most_activated_node(model, grads_list, channel_wise = "channel", objective = "zero"):
